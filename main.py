@@ -10,9 +10,13 @@ import PySide6.QtCore
 import PySide6.QtGui
 import PySide6.QtWidgets
 
-# Garante que os plugins Qt sejam encontrados dentro do bundle do PyInstaller
-if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-    plugin_path = os.path.join(sys._MEIPASS, 'PySide6', 'plugins')
+# Garante que os plugins Qt sejam encontrados dentro do bundle
+if getattr(sys, 'frozen', False):
+    if hasattr(sys, '_MEIPASS'):
+        base = sys._MEIPASS
+    else:
+        base = os.path.dirname(sys.executable)
+    plugin_path = os.path.join(base, 'PySide6', 'plugins')
     if os.path.isdir(plugin_path):
         os.environ['QT_QPA_PLUGIN_PATH'] = plugin_path
 
