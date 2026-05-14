@@ -8,28 +8,39 @@ Uso:
 """
 import os
 import PySide6
-from PySide6.QtCore import QT_VERSION_STR
 
 block_cipher = None
 
-# Mapeia todos os plugins Qt como binários para garantir
-# que o plugin de plataforma (cocoa no mac, windows no win) seja incluído
-plugin_src = os.path.join(os.path.dirname(PySide6.__file__), "plugins")
+# Localiza a pasta de plugins do Qt
+# No macOS pode estar em PySide6/plugins ou PySide6/Qt/plugins
+pyside_dir = os.path.dirname(PySide6.__file__)
+possiveis_plugins = [
+    os.path.join(pyside_dir, "plugins"),
+    os.path.join(pyside_dir, "Qt", "plugins"),
+    os.path.join(pyside_dir, "Qt", "lib"),
+]
+plugin_src = None
+for p in possiveis_plugins:
+    if os.path.isdir(p):
+        plugin_src = p
+        break
+
 plugin_binaries = []
-for root, dirs, files in os.walk(plugin_src):
-    for f in files:
-        full = os.path.join(root, f)
-        rel = os.path.relpath(root, plugin_src)
-        dst = os.path.join("PySide6", "plugins", rel, f)
-        plugin_binaries.append((dst, full, "BINARY"))
+plugin_datas = []
+if plugin_src:
+    for root, dirs, files in os.walk(plugin_src):
+        for f in files:
+            full = os.path.join(root, f)
+            rel = os.path.relpath(root, plugin_src)
+            dst = os.path.join("PySide6", "plugins", rel, f)
+            plugin_binaries.append((dst, full, "BINARY"))
+    plugin_datas = [(plugin_src, "PySide6/plugins")]
 
 a = Analysis(
     ["main.py"],
     pathex=[],
     binaries=plugin_binaries,
-    datas=[
-        (plugin_src, "PySide6/plugins"),
-    ],
+    datas=plugin_datas,
     hiddenimports=[
         "PySide6.QtCore",
         "PySide6.QtGui",

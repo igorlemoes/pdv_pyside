@@ -58,7 +58,7 @@ bdist_mac_options = {
 
 executavel = Executable(
     script="main.py",
-    base="Win32GUI" if sys.platform == "win32" else None,
+    base="gui" if sys.platform == "win32" else None,
     target_name="PDV",
 )
 
