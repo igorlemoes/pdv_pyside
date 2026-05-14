@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 """
 Spec do PyInstaller para o PDV Minimercado.
-Gera .app funcional no macOS e .exe no Windows.
+Modo onedir — estrutura correta para .app no macOS.
 
 Uso:
     pyinstaller pdv.spec
@@ -11,33 +11,10 @@ import PySide6
 
 block_cipher = None
 
-# Localiza a pasta de plugins do Qt
-# No macOS pode estar em PySide6/plugins ou PySide6/Qt/plugins
-pyside_dir = os.path.dirname(PySide6.__file__)
-possiveis_plugins = [
-    os.path.join(pyside_dir, "plugins"),
-    os.path.join(pyside_dir, "Qt", "plugins"),
-    os.path.join(pyside_dir, "Qt", "lib"),
-]
-plugin_src = None
-for p in possiveis_plugins:
-    if os.path.isdir(p):
-        plugin_src = p
-        break
-
-plugin_binaries = []
-if plugin_src:
-    for root, dirs, files in os.walk(plugin_src):
-        for f in files:
-            full = os.path.join(root, f)
-            rel = os.path.relpath(root, plugin_src)
-            dst = os.path.join("PySide6", "plugins", rel)
-            plugin_binaries.append((full, dst))
-
 a = Analysis(
     ["main.py"],
     pathex=[],
-    binaries=plugin_binaries,
+    binaries=[],
     datas=[],
     hiddenimports=[
         "PySide6.QtCore",
@@ -50,9 +27,6 @@ a = Analysis(
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
-    win_no_prefer_redirects=False,
-    win_private_assemblies=False,
-    cipher=block_cipher,
     noarchive=False,
 )
 
@@ -61,30 +35,36 @@ pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 exe = EXE(
     pyz,
     a.scripts,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
     [],
+    exclude_binaries=True,
     name="PDV",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    upx_exclude=[],
-    runtime_tmpdir=None,
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
-    target_arch=None,
-    codesign_identity=None,
+    target_arch="arm64",
+    codesign_identity="-",
     entitlements_file=None,
 )
 
-app = BUNDLE(
+coll = COLLECT(
     exe,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name="PDV",
+)
+
+app = BUNDLE(
+    coll,
     name="PDV.app",
     icon=None,
-    target_arch="universal2",
     bundle_identifier="com.pdv.minimercado",
     info_plist={
         "CFBundleIdentifier": "com.pdv.minimercado",
@@ -94,6 +74,5 @@ app = BUNDLE(
         "NSSupportsAutomaticGraphicsSwitching": True,
         "NSPrincipalClass": "NSApplication",
         "NSRequiresAquaSystemAppearance": False,
-        "QT_MAC_WANTS_LAYER": "1",
     },
 )
