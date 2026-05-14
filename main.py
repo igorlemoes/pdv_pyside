@@ -111,7 +111,7 @@ def main():
         QWidget {
             background-color: #2B2B2B;
             color: white;
-            font-family: Segoe UI, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica Neue, Arial, sans-serif;
         }
         QLineEdit {
             background-color: #3B3B3B;
