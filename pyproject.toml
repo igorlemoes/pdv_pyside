@@ -1,0 +1,9 @@
+[project]
+name = "pdv-pyside"
+version = "1.0.0"
+description = "PDV Minimercado - PySide6 Port"
+requires-python = ">=3.10"
+dependencies = [
+    "peewee>=4.0.5",
+    "pyside6>=6.11.1",
+]
