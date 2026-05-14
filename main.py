@@ -3,6 +3,19 @@ Sistema PDV para Minimercado — Ponto de Venda e Controle de Estoque.
 Arquivo principal de inicialização.
 """
 import sys
+import os
+
+# Força o empacotamento dos plugins Qt no PyInstaller (necessário para macOS .app)
+import PySide6.QtCore
+import PySide6.QtGui
+import PySide6.QtWidgets
+
+# Garante que os plugins Qt sejam encontrados dentro do bundle do PyInstaller
+if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    plugin_path = os.path.join(sys._MEIPASS, 'PySide6', 'plugins')
+    if os.path.isdir(plugin_path):
+        os.environ['QT_QPA_PLUGIN_PATH'] = plugin_path
+
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QHBoxLayout,
     QPushButton, QStackedWidget, QVBoxLayout, QLabel

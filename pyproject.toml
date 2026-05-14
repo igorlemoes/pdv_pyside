@@ -5,5 +5,6 @@ description = "PDV Minimercado - PySide6 Port"
 requires-python = ">=3.10"
 dependencies = [
     "peewee>=4.0.5",
+    "pyinstaller>=6.20.0",
     "pyside6>=6.11.1",
 ]
