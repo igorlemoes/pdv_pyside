@@ -26,15 +26,13 @@ for p in possiveis_plugins:
         break
 
 plugin_binaries = []
-plugin_datas = []
 if plugin_src:
     for root, dirs, files in os.walk(plugin_src):
         for f in files:
             full = os.path.join(root, f)
             rel = os.path.relpath(root, plugin_src)
-            dst = os.path.join("PySide6", "plugins", rel, f)
-            plugin_binaries.append((dst, full, "BINARY"))
-    plugin_datas = [(plugin_src, "PySide6/plugins")]
+            dst = os.path.join("PySide6", "plugins", rel)
+            plugin_binaries.append((full, dst))
 
 a = Analysis(
     ["main.py"],
