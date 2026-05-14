@@ -9,12 +9,18 @@ import peewee as pw
 
 def _db_path():
     if getattr(sys, 'frozen', False):
-        # Rodando como bundle (PyInstaller) — salva em ~/Library/Application Support
-        app_support = os.path.join(
-            os.path.expanduser("~"), "Library", "Application Support", "PDVMinimercado"
-        )
-        os.makedirs(app_support, exist_ok=True)
-        return os.path.join(app_support, "pdv.db")
+        if sys.platform == "win32":
+            # %APPDATA%\PDVMinimercado\pdv.db
+            base = os.environ.get("APPDATA", os.path.expanduser("~"))
+        elif sys.platform == "darwin":
+            # ~/Library/Application Support/PDVMinimercado/pdv.db
+            base = os.path.join(os.path.expanduser("~"), "Library", "Application Support")
+        else:
+            # ~/.local/share/PDVMinimercado/pdv.db  (padrão XDG no Linux)
+            base = os.environ.get("XDG_DATA_HOME", os.path.join(os.path.expanduser("~"), ".local", "share"))
+        app_dir = os.path.join(base, "PDVMinimercado")
+        os.makedirs(app_dir, exist_ok=True)
+        return os.path.join(app_dir, "pdv.db")
     # Rodando direto do fonte — usa o diretório do arquivo
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), "pdv.db")
 

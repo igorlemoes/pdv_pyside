@@ -1,15 +1,16 @@
 # -*- mode: python ; coding: utf-8 -*-
 """
 Spec do PyInstaller para o PDV Minimercado.
-Modo onedir — estrutura correta para .app no macOS.
+Modo onedir — funciona no macOS e Windows.
 
-Uso:
-    pyinstaller pdv.spec
+macOS: use build_mac.sh (faz re-assinatura necessária)
+Windows: pyinstaller pdv.spec
 """
-import os
-import PySide6
+import sys
 
 block_cipher = None
+IS_MAC = sys.platform == "darwin"
+IS_WIN = sys.platform == "win32"
 
 a = Analysis(
     ["main.py"],
@@ -45,9 +46,10 @@ exe = EXE(
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
-    target_arch="arm64",
-    codesign_identity="-",
+    target_arch=None,
+    codesign_identity="-" if IS_MAC else None,
     entitlements_file=None,
+    # Ícone: icon="icon.ico" no Windows, icon="icon.icns" no macOS
 )
 
 coll = COLLECT(
@@ -61,18 +63,19 @@ coll = COLLECT(
     name="PDV",
 )
 
-app = BUNDLE(
-    coll,
-    name="PDV.app",
-    icon=None,
-    bundle_identifier="com.pdv.minimercado",
-    info_plist={
-        "CFBundleIdentifier": "com.pdv.minimercado",
-        "CFBundleName": "PDV Minimercado",
-        "CFBundleShortVersionString": "1.0.0",
-        "NSHighResolutionCapable": True,
-        "NSSupportsAutomaticGraphicsSwitching": True,
-        "NSPrincipalClass": "NSApplication",
-        "NSRequiresAquaSystemAppearance": False,
-    },
-)
+if IS_MAC:
+    app = BUNDLE(
+        coll,
+        name="PDV.app",
+        icon=None,
+        bundle_identifier="com.pdv.minimercado",
+        info_plist={
+            "CFBundleIdentifier": "com.pdv.minimercado",
+            "CFBundleName": "PDV Minimercado",
+            "CFBundleShortVersionString": "1.0.0",
+            "NSHighResolutionCapable": True,
+            "NSSupportsAutomaticGraphicsSwitching": True,
+            "NSPrincipalClass": "NSApplication",
+            "NSRequiresAquaSystemAppearance": False,
+        },
+    )
