@@ -38,7 +38,7 @@ a = Analysis(
     ["main.py"],
     pathex=[],
     binaries=plugin_binaries,
-    datas=plugin_datas,
+    datas=[],
     hiddenimports=[
         "PySide6.QtCore",
         "PySide6.QtGui",
@@ -84,10 +84,16 @@ app = BUNDLE(
     exe,
     name="PDV.app",
     icon=None,
+    target_arch="universal2",
     bundle_identifier="com.pdv.minimercado",
     info_plist={
+        "CFBundleIdentifier": "com.pdv.minimercado",
+        "CFBundleName": "PDV Minimercado",
+        "CFBundleShortVersionString": "1.0.0",
         "NSHighResolutionCapable": True,
         "NSSupportsAutomaticGraphicsSwitching": True,
+        "NSPrincipalClass": "NSApplication",
+        "NSRequiresAquaSystemAppearance": False,
         "QT_MAC_WANTS_LAYER": "1",
     },
 )
